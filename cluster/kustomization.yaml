@@ -1,7 +1,7 @@
 bases:
-  - ./flagger/
-  - ./falco/
-  # - ./clamav/
-  # - ./elk/
+  - ../base/flagger/
+  - ../base/falco/
+  # - ../base/clamav/
+  # - ../base/elk/
   - ./common/
   - ./idp-dev/

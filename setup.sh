@@ -62,7 +62,7 @@ else
 fi
 
 # set it up with the s3 backend
-cd "$RUN_BASE/$SCRIPT_BASE/secops-all"
+cd "$RUN_BASE/$SCRIPT_BASE/terraform"
 terraform init -backend-config="bucket=$BUCKET" \
       -backend-config="key=tf-state/$TF_VAR_cluster_name" \
       -backend-config="dynamodb_table=secops_terraform_locks" \

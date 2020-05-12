@@ -7,10 +7,17 @@
 set -e
 
 if [ -z "$1" ]; then
-     echo "usage:  $0 <cluster_name>"
+     echo "usage:  $0 <cluster_name> [<cluster_type>]"
      echo "example: ./deploy.sh secops-dev"
+     echo "example: ./deploy.sh secops-dev dev"
      exit 1
 else
+     if [ ! -z "$2" ] ; then
+        if [ ! -d "$2" ] ; then
+          echo "cluster type not found: $2"
+          exit 1
+        fi
+     fi
      export TF_VAR_cluster_name="$1"
 fi
 
@@ -46,7 +53,7 @@ RUN_BASE=$(pwd)
 find . -name terraform.tfstate -print0 | xargs -0 rm
 
 # set it up with the s3 backend, push into the directory.
-pushd "$SCRIPT_BASE/secops-all"
+pushd "$SCRIPT_BASE/terraform"
 
 terraform init -backend-config="bucket=$BUCKET" \
       -backend-config="key=tf-state/$TF_VAR_cluster_name" \
@@ -78,5 +85,9 @@ if kubectl get sc | grep -E ^gp2.*default >/dev/null ; then
 fi
 
 # apply k8s config for this cluster
-kubectl apply -k "$RUN_BASE/install"
+if [ -z "$2" ] ; then
+  kubectl apply -k "$RUN_BASE/install"
+else
+  kubectl apply -k "$RUN_BASE/install-$2"
+fi
 
